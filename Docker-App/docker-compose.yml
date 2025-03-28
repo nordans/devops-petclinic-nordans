@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: petclinic-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: petclinic
+      MYSQL_USER: petclinic
+      MYSQL_PASSWORD: petclinic
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - petclinic-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "3306:3306"
+
+  petclinic:
+    build:
+      context: .
+    container_name: spring-petclinic
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MYSQL_URL: jdbc:mysql://mysql:3306/petclinic
+      MYSQL_USER: petclinic
+      MYSQL_PASS: petclinic
+    ports:
+      - "8080:8080"
+    networks:
+      - petclinic-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: petclinic-nginx
+    depends_on:
+      - petclinic
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - petclinic-net
+
+volumes:
+  mysql_data:
+
+networks:
+  petclinic-net:
+
