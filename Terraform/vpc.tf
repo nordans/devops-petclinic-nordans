@@ -38,6 +38,8 @@ resource "aws_subnet" "kops_subnet_1" {
   tags = {
     Name    = "kops-subnet-1"
     Project = "ProjectN"
+    "kubernetes.io/cluster/petclinic.normandev.xyz" = "owned"
+    "SubnetType"                                    = "Public"
   }
 }
 resource "aws_subnet" "kops_subnet_2" {
@@ -49,6 +51,8 @@ resource "aws_subnet" "kops_subnet_2" {
   tags = {
     Name    = "kops-subnet-2"
     Project = "ProjectN"
+    "kubernetes.io/cluster/petclinic.normandev.xyz" = "owned"
+    "SubnetType"                                    = "Public"
   }
 }
 resource "aws_route_table_association" "subnet_1_assoc" {

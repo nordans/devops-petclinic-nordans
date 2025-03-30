@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-petclinic-db
+spec:
+  template:
+    spec:
+      containers:
+      - name: init-mysql
+        image: mysql:8.0
+        command:
+        - sh
+        - -c
+        - |
+          echo "Waiting for MySQL to be ready..."
+          until mysqladmin ping -h db-service --silent; do sleep 2; done
+          echo "Creating 'petclinic' database..."
+          mysql -h db-service -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE IF NOT EXISTS petclinic;"
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: root-password
+      restartPolicy: OnFailure

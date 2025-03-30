@@ -16,6 +16,20 @@ spec:
     spec:
       containers:
       - name: petclinic
-        image: petclinic
+        image: 600627338907.dkr.ecr.eu-north-1.amazonaws.com/wetimagesregistry:wetappimage
+        imagePullPolicy: Always
         ports:
-        - containerPort: 8080
+        - name: apport
+          containerPort: 8080
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: mysql
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:mysql://db-service:3306/petclinic?useSSL=false&allowPublicKeyRetrieval=true
+        - name: SPRING_DATASOURCE_USERNAME
+          value: root
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: root-password
