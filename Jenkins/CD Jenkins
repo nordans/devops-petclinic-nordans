@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_REGION = 'eu-north-1'
+        ECR_REPO = 'spring-petclinic'
+        ECR_REGISTRY = '600627338907.dkr.ecr.eu-north-1.amazonaws.com'
+        IMAGE_TAG = "${BUILD_NUMBER}" // Można zastąpić parametrem!
+        K8S_NAMESPACE = 'default'
+        DEPLOYMENT_NAME = 'spring-petclinic'
+        CONTAINER_NAME = 'spring-petclinic'
+    }
+
+    stages {
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh """
+                    echo "✅ Deploying ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG} to Kubernetes..."
+                    kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG} -n ${K8S_NAMESPACE}
+                """
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "🎉 Deployment complete: ${ECR_REPO}:${IMAGE_TAG}"
+        }
+        failure {
+            echo "❌ Deployment failed"
+        }
+    }
+}
