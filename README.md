@@ -22,7 +22,7 @@
 ### 💻 Application
 - Java 17 + Spring Boot
 - Maven
-- Based on: https://github.com/dockersamples/spring-petclinic-docker
+- Based on: https://github.com/spring-projects/spring-petclinic
 
 ---
 
